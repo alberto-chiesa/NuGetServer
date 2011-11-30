@@ -36,6 +36,12 @@
     <Reference Include="Elmah">
       <HintPath>..\packages\elmah.corelibrary.1.2\lib\Elmah.dll</HintPath>
     </Reference>
+    <Reference Include="Esent.Collections">
+      <HintPath>..\packages-manual\ManagedEsent\Esent.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Esent.Interop">
+      <HintPath>..\packages-manual\ManagedEsent\Esent.Interop.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -90,7 +96,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthDigest.cs" />
+    <Compile Include="BasicAuthenticationModule.cs" />
+    <Compile Include="DigestAuthenticationModule.cs" />
     <Compile Include="DataServices\Routes.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -102,6 +109,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Packages\Readme.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -126,11 +134,20 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Models\" />
-    <Folder Include="Packages\" />
     <Folder Include="Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Packages\elmah.1.2.0.1.nupkg" />
+    <Content Include="Packages\elmah.corelibrary.1.2.nupkg" />
+    <Content Include="Packages\Microsoft.Web.Infrastructure.1.0.0.0.nupkg" />
+    <Content Include="Packages\Ninject.2.2.1.4.nupkg" />
+    <Content Include="Packages\NuGet.Core.1.5.20902.9026.nupkg" />
+    <Content Include="Packages\NuGet.Server.1.5.20902.9026.nupkg" />
+    <Content Include="Packages\RouteMagic.1.0.nupkg" />
+    <Content Include="Packages\WebActivator.1.4.4.nupkg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

@@ -8,7 +8,7 @@ using System.Text;
 using System.Web;
 
 namespace NuGetServer {
-    public class AuthDigest : IHttpModule {
+    public class DigestAuthenticationModule : IHttpModule {
         public void Dispose() {
         }
 
@@ -56,7 +56,7 @@ namespace NuGetServer {
 
             // see Step #5 of the Digest algorithm
             // check against Digest Scheme
-            string realm = ConfigurationSettings.AppSettings["HTTPDigest.Components.AuthDigest_Realm"];
+            string realm = ConfigurationSettings.AppSettings["Auth_Realm"];
 
             // a)
             // A1 = unq(username-value) ":" unq(realm-value) ":" passwd
