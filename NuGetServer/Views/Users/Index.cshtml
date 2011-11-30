@@ -1,0 +1,23 @@
+﻿@using System.Security.Principal
+@model IEnumerable<IPrincipal>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Users</title>
+</head>
+<body>
+    <table>	
+		@foreach (var user in Model) {
+			<tr>
+				<td>@user.Identity.Name</td>
+				<td>@string.Join(", ", NuGetServer.Roles.AllRoles.Where(user.IsInRole))</td>
+			</tr>
+		}
+    </table>
+</body>
+</html>

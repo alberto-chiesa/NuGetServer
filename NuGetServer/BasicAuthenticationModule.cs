@@ -52,7 +52,7 @@ namespace NuGetServer {
 
 		private IPrincipal Authenticate(string username, string password) {
             using (ApplicationBootstrapper.Container.BeginScope()) {
-                var svc = ApplicationBootstrapper.Container.Resolve<IAuthenticationService>();
+                var svc = ApplicationBootstrapper.Container.Resolve<IUserRepository>();
                 return svc.AuthenticateUser(username, password);
             }
 		}

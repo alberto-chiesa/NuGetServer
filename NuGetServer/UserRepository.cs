@@ -9,18 +9,24 @@ using System.Text;
 using Newtonsoft.Json;
 
 namespace NuGetServer {
-    public interface IAuthenticationService {
+    public interface IUserRepository {
         IPrincipal AuthenticateUser(string username, string password);
+
         void CreateUser(string username, string password, IEnumerable<string> roles);
+        void ChangePassword(string username, string newPassword);
+        void SetRoles(string username, IEnumerable<string> roles);
+        void DeleteUser(string username);
+        IEnumerable<IPrincipal> AllUsers { get; }
     }
 
     public static class Roles {
         public const string Administrator = "Administrator";
         public const string Writer        = "Writer";
         public const string Reader        = "Reader";
+        public static readonly string[] AllRoles = new[] { Reader, Writer, Administrator };
     }
 
-    public class AuthenticationService : IAuthenticationService {
+    public class UserRepository : IUserRepository {
         private class UserData {
             public string Username { get; set; }
             public byte[] PasswordHash { get; set; }
@@ -31,7 +37,7 @@ namespace NuGetServer {
         private readonly PersistentDictionary<string, string> _users;
         private readonly Random _rnd = new Random();
 
-        public AuthenticationService(string dbDirectory) {
+        public UserRepository(string dbDirectory) {
             _users = new PersistentDictionary<string, string>(dbDirectory);
         }
 
@@ -97,6 +103,37 @@ namespace NuGetServer {
         public void CreateAdminAccountIfNoUsersExist() {
             if (_users.Count == 0) {
                 CreateUser("admin", "abcd", new[] { Roles.Reader, Roles.Writer, Roles.Administrator });
+            }
+        }
+
+        public void DeleteUser(string username) {
+            _users.Remove(username);
+        }
+
+        public void ChangePassword(string username, string newPassword) {
+            var user = TryGetUser(username);
+            if (user == null)
+                throw new KeyNotFoundException();
+            user.PasswordHash = HashPassword(newPassword, user.PasswordSalt);
+            SetUser(user);
+        }
+
+        public void SetRoles(string username, IEnumerable<string> roles) {
+            var user = TryGetUser(username);
+            if (user == null)
+                throw new KeyNotFoundException();
+            user.Roles = roles.ToArray();
+            SetUser(user);
+        }
+
+        private IPrincipal ReadAsPrincipal(string data) {
+            var user = JsonConvert.DeserializeObject<UserData>(data);
+            return new GenericPrincipal(new GenericIdentity(user.Username), user.Roles);
+        }
+
+        public IEnumerable<IPrincipal> AllUsers {
+            get {
+                return _users.Values.Select(ReadAsPrincipal);
             }
         }
     }

@@ -59,7 +59,7 @@ namespace NuGetServer {
 
             // see Step #5 of the Digest algorithm
             // check against Digest Scheme
-            string realm = ConfigurationSettings.AppSettings["Auth_Realm"];
+            string realm = ConfigurationManager.AppSettings["Auth_Realm"];
 
             // a)
             // A1 = unq(username-value) ":" unq(realm-value) ":" passwd
@@ -239,8 +239,6 @@ namespace NuGetServer {
         protected virtual bool AuthenticateAgentDigest(HttpApplication app, string username, out string password, out string[] groups) {
             password = "";
             groups = null;
-            int lagentID = 0;
-            string lpageURL = "";
 
             password = "pass";
             groups = new[] { "user" };
