@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Web;
 using System.Web.Security;
 using System.Security.Principal;
+using Castle.MicroKernel.Lifestyle;
 
 namespace NuGetServer {
 	public class BasicAuthenticationModule : IHttpModule
@@ -49,11 +50,11 @@ namespace NuGetServer {
             context.CompleteRequest();
         }
 
-		private GenericPrincipal Authenticate(string username, string password) {
-            if (password == "pass")
-                return new GenericPrincipal(new GenericIdentity(username), new string[0]);
-            else
-                return null;
+		private IPrincipal Authenticate(string username, string password) {
+            using (ApplicationBootstrapper.Container.BeginScope()) {
+                var svc = ApplicationBootstrapper.Container.Resolve<IAuthenticationService>();
+                return svc.AuthenticateUser(username, password);
+            }
 		}
 
 	    private string Base64Decode(string encodedData) {

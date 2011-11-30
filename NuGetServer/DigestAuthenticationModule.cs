@@ -8,6 +8,9 @@ using System.Text;
 using System.Web;
 
 namespace NuGetServer {
+    /// <summary>
+    /// This class does not really perform any authentication, but I leave it here until NuGet might support digest authentication.
+    /// </summary>
     public class DigestAuthenticationModule : IHttpModule {
         public void Dispose() {
         }

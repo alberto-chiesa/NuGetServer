@@ -1,18 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Services;
+using System.Linq;
 using System.ServiceModel.Activation;
+using System.Web;
+using System.Web.Hosting;
 using System.Web.Routing;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using Ninject;
 using NuGet.Server;
 using NuGet.Server.DataServices;
 using NuGet.Server.Infrastructure;
-using RouteMagic;
 
-[assembly: WebActivator.PreApplicationStartMethod(typeof(NuGetServer.NuGetRoutes), "Start")]
+[assembly: WebActivator.PreApplicationStartMethod(typeof(NuGetServer.ApplicationBootstrapper), "Start")]
+
 
 namespace NuGetServer {
-    public static class NuGetRoutes {
+    public static class ApplicationBootstrapper {
+        public static IWindsorContainer Container { get; private set; }
+
         public static void Start() {
             MapRoutes(RouteTable.Routes);
+
+            var authService = new AuthenticationService(HostingEnvironment.MapPath("~/App_Data/Users"));
+
+            Container = new WindsorContainer();
+            Container.Register(
+                Component.For<IAuthenticationService>().Instance(authService)
+            );
+
+            authService.CreateAdminAccountIfNoUsersExist();
         }
 
         private static void MapRoutes(RouteCollection routes) {
