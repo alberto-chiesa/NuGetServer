@@ -112,7 +112,6 @@
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="UserRepository.cs" />
     <Compile Include="BasicAuthenticationModule.cs" />
-    <Compile Include="DigestAuthenticationModule.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
