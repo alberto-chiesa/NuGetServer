@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace NuGetServer.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class UsersController : Controller
     {
         private readonly IUserRepository _repository;
