@@ -110,6 +110,8 @@
   <ItemGroup>
     <Compile Include="ApplicationBootstrapper.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="IUserRepository.cs" />
+    <Compile Include="Roles.cs" />
     <Compile Include="UserRepository.cs" />
     <Compile Include="BasicAuthenticationModule.cs" />
     <Compile Include="Global.asax.cs">

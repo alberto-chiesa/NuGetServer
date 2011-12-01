@@ -9,23 +9,6 @@ using System.Text;
 using Newtonsoft.Json;
 
 namespace NuGetServer {
-    public interface IUserRepository {
-        IPrincipal AuthenticateUser(string username, string password);
-
-        void CreateUser(string username, string password, IEnumerable<string> roles);
-        void ChangePassword(string username, string newPassword);
-        void SetRoles(string username, IEnumerable<string> roles);
-        void DeleteUser(string username);
-        IEnumerable<IPrincipal> AllUsers { get; }
-    }
-
-    public static class Roles {
-        public const string Administrator = "Administrator";
-        public const string Writer        = "Writer";
-        public const string Reader        = "Reader";
-        public static readonly string[] AllRoles = new[] { Reader, Writer, Administrator };
-    }
-
     public class UserRepository : IUserRepository {
         private class UserData {
             public string Username { get; set; }
