@@ -93,10 +93,12 @@ namespace NuGetServer {
             serviceRoute.Defaults = new RouteValueDictionary { { "serviceType", "odata" } };
             serviceRoute.Constraints = new RouteValueDictionary { { "serviceType", "odata" } };
             routes.Add("nuget", serviceRoute);
-        }
 
-        private static PackageService CreatePackageService() {
-            return NinjectBootstrapper.Kernel.Get<PackageService>();
+            routes.MapRoute(
+                "Default", // Route name
+                "{controller}/{action}/{id}", // URL with parameters
+                new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
+            );
         }
     }
 }

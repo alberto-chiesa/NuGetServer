@@ -15,7 +15,6 @@ namespace NuGetServer.Controllers
             _repository = repository;
         }
 
-
         public ActionResult Index()
         {
             return View(_repository.AllUsers);

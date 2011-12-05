@@ -1,0 +1,10 @@
+﻿@model NuGetServer.Models.LoginModel
+
+@using (Html.BeginForm()) {
+	<div>
+		Log in<br/>
+		Username: @Html.TextBoxFor(m => m.Username)<br/>
+		Password: @Html.TextBoxFor(m => m.Password)<br/>
+		<input type="submit" value="Log in"/>
+	</div>
+}
