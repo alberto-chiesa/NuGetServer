@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Services;
+using System.IO;
 using System.Linq;
 using System.ServiceModel.Activation;
 using System.Web;
@@ -70,7 +72,10 @@ namespace NuGetServer {
         public static void Start() {
             MapRoutes(RouteTable.Routes);
 
-            var authService = new UserRepository(HostingEnvironment.MapPath("~/App_Data/Users"));
+            string usersDatabaseDirectory = ConfigurationManager.AppSettings["UsersDatabaseDirectory"] ?? "~/App_Data/Users";
+            usersDatabaseDirectory = (usersDatabaseDirectory.StartsWith("~/") ? HostingEnvironment.MapPath(usersDatabaseDirectory) : Path.Combine(HostingEnvironment.ApplicationPhysicalPath, usersDatabaseDirectory));
+
+            var authService = new UserRepository(usersDatabaseDirectory);
 
             Container = new WindsorContainer();
             Container.Register(
@@ -99,6 +104,9 @@ namespace NuGetServer {
                 "{controller}/{action}/{id}", // URL with parameters
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
+
+            // For some godforsaken reason, the PublishPackage route (registered by NuGet.Server) causes the { controller, action } => url mapping to always return this route.
+            routes.Remove(routes.OfType<Route>().Single(r => r.DataTokens != null && r.DataTokens.ContainsKey("__RouteName") && (string)r.DataTokens["__RouteName"] == "PublishPackage"));
         }
     }
 }

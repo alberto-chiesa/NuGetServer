@@ -1,13 +1,48 @@
-﻿@using System.Configuration
-@{
+﻿@{
 	ViewBag.Title = "NuGet Private Repository";
 }
 
-<div>
-    <h2>You are running NuGet.Server v@(typeof(NuGet.Server.DataServices.Package).Assembly.GetName().Version)</h2>
-    <p>
-        Click <a href="@Url.Content("~/nuget/Packages")">here</a> to view your packages.
-    </p>
+@section Header {
+	<h1>
+		NuGet Repository
+	</h1>
+}
+
+<div class="row">
+	<div class="span10">
+		<h2>Available packages</h2>
+	    Click <a href="@Url.Content("~/nuget/Packages")">here</a> to view the packages in the feed@(!User.Identity.IsAuthenticated ? " (requires authentication)" : "").
+	</div>
+</div>
+<div class="row">
+	<div class="span10">
+		<h2>Use with Package Manager</h2>
+		To use this feed with the package manager, add this URL to the list of package sources:
+		<blockquote>@Helpers.GetRepositoryUrl(Request.Url, Request.ApplicationPath)</blockquote>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span10">
+		<h2>Administration</h2>
+		@if (User.IsInRole(AvailableRoles.Administrator)) {
+			<text>Administrative tasks:</text>
+			<ul>
+				<li>Administer users</li>
+				<li>Change own password</li>
+			</ul>
+		}
+		else if (User.Identity.IsAuthenticated) {
+			<text>Change your password</text>
+		}
+		else {
+			<a href="@Url.Action(MVC.Login.Index())">Log in</a><text> to change your password, or to administer users.</text>
+		}
+	</div>
+</div>
+
+@*
+	Comments I want to keep just in case I will later enable pushing.
     <fieldset style="width:800px">
         <legend><strong>Repository URLs</strong></legend>
         In the package manager settings, add the following URL to the list of 
@@ -23,6 +58,6 @@
         }
         <blockquote>
             <strong>nuget push {package file} -s @Helpers.GetPushUrl(Request.Url, Request.ApplicationPath) {apikey}</strong>
-        </blockquote>            
+        </blockquote>
     </fieldset>
-</div>
+	*@

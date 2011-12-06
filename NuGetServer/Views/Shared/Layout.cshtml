@@ -1,11 +1,48 @@
-﻿<!DOCTYPE html>
+﻿@using NuGetServer
+<!DOCTYPE html>
 
 <html>
 <head>
     <title>@ViewBag.Title</title>
+	<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/bootstrap.css")"/>
 	<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/Site.css")"/>
-</head>
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	</head>
 <body>
-	@RenderBody()
+    <div class="topbar">
+		<div class="fill">
+			<div class="container">
+				<a class="brand" href="/">NuGet Repository</a>
+				<ul class="nav">
+					<li class="active"><a href="/">Home</a></li>
+					@if (User.IsInRole(AvailableRoles.Administrator)) {
+						<li><a href="@Url.Action(MVC.Users.Index())">Users</a></li>
+					}
+				</ul>
+				@if (User.Identity.IsAuthenticated) {
+					<form action="" class="pull-right">
+						<button class="btn" type="submit">Sign out</button>
+					</form>
+				} else {
+					using (Html.BeginForm(MVC.Login.DoLogin(), FormMethod.Post, new { @class = "pull-right" })) {
+						<input class="input-small" type="text" placeholder="Username" name="Username"/>
+						<input class="input-small" type="password" placeholder="Password" name="Password"/>
+						<button class="btn" type="submit">Sign in</button>
+					}
+				}
+			</div>
+		</div>
+    </div>
+
+	<div class="container">
+		<div class="content">
+			<div class="page-header">
+				@RenderSection("Header")
+			</div>
+			@RenderBody()
+		</div>
+	</div>
 </body>
 </html>

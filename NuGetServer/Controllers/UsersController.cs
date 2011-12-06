@@ -6,8 +6,8 @@ using System.Web.Mvc;
 
 namespace NuGetServer.Controllers
 {
-    [Authorize(Roles = Roles.Administrator)]
-    public class UsersController : Controller
+    [Authorize(Roles = AvailableRoles.Administrator)]
+    public partial class UsersController : Controller
     {
         private readonly IUserRepository _repository;
 
@@ -15,7 +15,7 @@ namespace NuGetServer.Controllers
             _repository = repository;
         }
 
-        public ActionResult Index()
+        public virtual ActionResult Index()
         {
             return View(_repository.AllUsers);
         }

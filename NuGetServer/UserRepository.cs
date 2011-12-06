@@ -85,9 +85,9 @@ namespace NuGetServer {
 
         public void CreateAdminAccountIfNoUsersExist() {
             if (_users.Count == 0) {
-                CreateUser("admin", "abcd", new[] { Roles.Reader, Roles.Writer, Roles.Administrator });
-                CreateUser("reader", "abcd", new[] { Roles.Reader });
-                CreateUser("writer", "abcd", new[] { Roles.Writer });
+                CreateUser("admin", "abcd", new[] { AvailableRoles.Reader, AvailableRoles.Writer, AvailableRoles.Administrator });
+                CreateUser("reader", "abcd", new[] { AvailableRoles.Reader });
+                CreateUser("writer", "abcd", new[] { AvailableRoles.Writer });
             }
         }
 

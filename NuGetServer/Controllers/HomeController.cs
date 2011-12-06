@@ -9,10 +9,10 @@ using NuGetServer.Models;
 
 namespace NuGetServer.Controllers
 {
-    public class HomeController : Controller
+    public partial class HomeController : Controller
     {
         [HttpGet]
-        public ActionResult Index()
+        public virtual ActionResult Index()
         {
             return View(new LoginModel());
         }
