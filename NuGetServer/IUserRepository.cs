@@ -4,6 +4,7 @@ using System.Security.Principal;
 namespace NuGetServer {
     public interface IUserRepository {
         IPrincipal AuthenticateUser(string username, string password);
+        IPrincipal TryGetUser(string username);
 
         void CreateUser(string username, string password, IEnumerable<string> roles);
         void ChangePassword(string username, string newPassword);

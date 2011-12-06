@@ -24,7 +24,7 @@ namespace NuGetServer {
             _users = new PersistentDictionary<string, string>(dbDirectory);
         }
 
-        private UserData TryGetUser(string username) {
+        private UserData TryGetUserData(string username) {
             string data;
             if (_users.TryGetValue(username, out data))
                 return JsonConvert.DeserializeObject<UserData>(data);
@@ -36,14 +36,23 @@ namespace NuGetServer {
             _users.Add(user.Username, data);
         }
 
+        private static GenericPrincipal CreatePrincipal(UserData user) {
+            return new GenericPrincipal(new GenericIdentity(user.Username), (string[])user.Roles.Clone());
+        }
+
         public IPrincipal AuthenticateUser(string username, string password) {
-            UserData user = TryGetUser(username);
+            var user = TryGetUserData(username);
             if (user != null && IsCorrectPassword(user, password)) {
-                return new GenericPrincipal(new GenericIdentity(username), (string[])user.Roles.Clone());
+                return CreatePrincipal(user);
             }
             else {
                 return null;
             }
+        }
+
+        public IPrincipal TryGetUser(string username) {
+            var user = TryGetUserData(username);
+            return (user != null ? CreatePrincipal(user) : null);
         }
 
         private static bool IsCorrectPassword(UserData user, string password) {
@@ -96,7 +105,7 @@ namespace NuGetServer {
         }
 
         public void ChangePassword(string username, string newPassword) {
-            var user = TryGetUser(username);
+            var user = TryGetUserData(username);
             if (user == null)
                 throw new KeyNotFoundException();
             user.PasswordHash = HashPassword(newPassword, user.PasswordSalt);
@@ -104,7 +113,7 @@ namespace NuGetServer {
         }
 
         public void SetRoles(string username, IEnumerable<string> roles) {
-            var user = TryGetUser(username);
+            var user = TryGetUserData(username);
             if (user == null)
                 throw new KeyNotFoundException();
             user.Roles = roles.ToArray();

@@ -41,11 +41,29 @@ namespace NuGetServer {
             return true;
         }
 
+        private bool DoFormsAuthentication(HttpApplication application) {
+            var authCookie = application.Request.Cookies[FormsAuthentication.FormsCookieName];
+            if (authCookie == null)
+                return false;
+
+            var ticket = FormsAuthentication.Decrypt(authCookie.Value);
+            if (ticket == null)
+                return false;
+
+            var principal = WithUserRepository(repo => repo.TryGetUser(ticket.Name));
+            if (principal == null)
+                return false;
+
+            application.Context.User = principal;
+
+            return true;
+        }
+
 		private void OnAuthenticateRequest(object sender, EventArgs e) {
 			var application = (HttpApplication)sender;
-			if (!application.Context.Request.IsAuthenticated) {
-                DoBasicAuthentication(application);
-			}
+            if (DoFormsAuthentication(application))
+                return;
+            DoBasicAuthentication(application);
 		}
 
         private void BasicAuthenticationFailed(HttpApplication context) {
@@ -55,11 +73,14 @@ namespace NuGetServer {
             context.CompleteRequest();
         }
 
-		private IPrincipal Authenticate(string username, string password) {
+        private TResult WithUserRepository<TResult>(Func<IUserRepository, TResult> func) {
             using (ApplicationBootstrapper.Container.BeginScope()) {
-                var svc = ApplicationBootstrapper.Container.Resolve<IUserRepository>();
-                return svc.AuthenticateUser(username, password);
+                return func(ApplicationBootstrapper.Container.Resolve<IUserRepository>());
             }
+        }
+
+		private IPrincipal Authenticate(string username, string password) {
+            return WithUserRepository(repo => repo.AuthenticateUser(username, password));
 		}
 
 	    private string Base64Decode(string encodedData) {
@@ -75,26 +96,20 @@ namespace NuGetServer {
 		private void OnEndRequest(object sender, EventArgs e) {
 			var application = (HttpApplication)sender;
 
-            if (IsBasicAuthUrl(application.Request.Path) && (application.Response.StatusCode == 401 || IsRedirectToLoginPage(application.Response))) {  // Messy: Forms authentication takes precedence here by default, so we have to override it.
+            if (application.Response.StatusCode == 401) {
                 application.Response.ClearContent();
                 application.Response.StatusCode = 401;
-				application.Response.AddHeader("WWW-Authenticate","BASIC Realm=" + _realm);  // Use basic authentication for this page.
                 application.Response.StatusDescription = "Access Denied";
                 application.Response.Write("401 Access Denied");
-                application.Response.RedirectLocation = null;
+
+                if (IsBasicAuthUrl(application.Request.Path)) {
+				    application.Response.AddHeader("WWW-Authenticate","BASIC Realm=" + _realm);  // Use basic authentication for this page.
+                }
+                else {
+                    FormsAuthentication.RedirectToLoginPage();
+                }
             }
 		}
-
-	    private bool IsRedirectToLoginPage(HttpResponse response) {
-	        if (FormsAuthentication.IsEnabled && response.StatusCode == 302) {
-                int queryIndex = response.RedirectLocation.IndexOf("?");
-                string redirectLocation = (queryIndex >= 0 ? response.RedirectLocation.Substring(0, queryIndex) : response.RedirectLocation);
-                return redirectLocation == FormsAuthentication.LoginUrl;
-            }
-            else {
-                return false;
-            }
-	    }
 
 	    private bool IsBasicAuthUrl(string path) {
             path = path.TrimStart(new[] { '/' }).ToLowerInvariant();
