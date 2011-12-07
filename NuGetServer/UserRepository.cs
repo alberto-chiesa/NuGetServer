@@ -7,6 +7,7 @@ using System.Web;
 using Microsoft.Isam.Esent.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using NuGetServer.Models;
 
 namespace NuGetServer {
     public class UserRepository : IUserRepository {
@@ -33,26 +34,26 @@ namespace NuGetServer {
 
         private void SetUser(UserData user) {
             string data = JsonConvert.SerializeObject(user);
-            _users.Add(user.Username, data);
+            _users[user.Username] = data;
         }
 
-        private static GenericPrincipal CreatePrincipal(UserData user) {
-            return new GenericPrincipal(new GenericIdentity(user.Username), (string[])user.Roles.Clone());
+        private static User CreateUserModel(UserData user) {
+            return new User(user.Username, user.Roles);
         }
 
-        public IPrincipal AuthenticateUser(string username, string password) {
+        public User AuthenticateUser(string username, string password) {
             var user = TryGetUserData(username);
             if (user != null && IsCorrectPassword(user, password)) {
-                return CreatePrincipal(user);
+                return CreateUserModel(user);
             }
             else {
                 return null;
             }
         }
 
-        public IPrincipal TryGetUser(string username) {
+        public User TryGetUser(string username) {
             var user = TryGetUserData(username);
-            return (user != null ? CreatePrincipal(user) : null);
+            return (user != null ? CreateUserModel(user) : null);
         }
 
         private static bool IsCorrectPassword(UserData user, string password) {
@@ -94,9 +95,8 @@ namespace NuGetServer {
 
         public void CreateAdminAccountIfNoUsersExist() {
             if (_users.Count == 0) {
-                CreateUser("admin", "abcd", new[] { AvailableRoles.Reader, AvailableRoles.Writer, AvailableRoles.Administrator });
+                CreateUser("admin", "abcd", new[] { AvailableRoles.Reader, AvailableRoles.Administrator });
                 CreateUser("reader", "abcd", new[] { AvailableRoles.Reader });
-                CreateUser("writer", "abcd", new[] { AvailableRoles.Writer });
             }
         }
 
@@ -125,9 +125,9 @@ namespace NuGetServer {
             return new GenericPrincipal(new GenericIdentity(user.Username), user.Roles);
         }
 
-        public IEnumerable<IPrincipal> AllUsers {
+        public IEnumerable<User> AllUsers {
             get {
-                return _users.Values.Select(ReadAsPrincipal);
+                return _users.Values.Select(JsonConvert.DeserializeObject<UserData>).Select(CreateUserModel);
             }
         }
     }

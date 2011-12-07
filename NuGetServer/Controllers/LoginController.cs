@@ -27,31 +27,37 @@ namespace NuGetServer.Controllers
 
         [HttpPost]
         public virtual ActionResult DoLogin(LoginModel model, string returnUrl) {
-            IPrincipal principal = null;
+            User user = null;
             bool loginFailed = false;
 
             if (!string.IsNullOrEmpty(model.Username) && !string.IsNullOrEmpty(model.Password)) {
-                principal = _userRepository.AuthenticateUser(model.Username, model.Password);
-                loginFailed = (principal == null);
+                user = _userRepository.AuthenticateUser(model.Username, model.Password);
+                loginFailed = (user == null);
             }
 
-            if (principal != null) {
+            if (user != null) {
                 FormsAuthentication.SetAuthCookie(model.Username, model.RememberMe);
-                return RedirectAfterLogin(returnUrl);
+                return RedirectAfterLoginOrLogout(returnUrl);
             }
             else {
                 TempData[LoginModelKey] = new LoginModel { Username = model.Username, Password = model.Password, RememberMe = model.RememberMe, LoginFailed = loginFailed };
-                return RedirectToAction(MVC.Login.Index());
+                return RedirectToAction(MVC.Login.Index().AddRouteValues(new { returnUrl }));
             }
         }
 
-        private ActionResult RedirectAfterLogin(string returnUrl) {
+        #warning TODO: Keep return url when login failed.
+        private ActionResult RedirectAfterLoginOrLogout(string returnUrl) {
             if (!string.IsNullOrEmpty(returnUrl))
                 return Redirect(returnUrl);
             else if (!string.IsNullOrEmpty(FormsAuthentication.DefaultUrl))
                 return Redirect(FormsAuthentication.DefaultUrl);
             else
                 return Redirect("/");
+        }
+
+        public virtual ActionResult SignOut(string returnUrl) {
+            FormsAuthentication.SignOut();
+            return RedirectAfterLoginOrLogout(returnUrl);
         }
     }
 }

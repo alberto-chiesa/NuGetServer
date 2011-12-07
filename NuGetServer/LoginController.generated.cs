@@ -36,6 +36,11 @@ namespace NuGetServer.Controllers {
         public System.Web.Mvc.ActionResult DoLogin() {
             return new T4MVC_ActionResult(Area, Name, ActionNames.DoLogin);
         }
+        [NonAction]
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public System.Web.Mvc.ActionResult SignOut() {
+            return new T4MVC_ActionResult(Area, Name, ActionNames.SignOut);
+        }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public LoginController Actions { get { return MVC.Login; } }
@@ -51,6 +56,7 @@ namespace NuGetServer.Controllers {
         public class ActionNamesClass {
             public readonly string Index = "Index";
             public readonly string DoLogin = "DoLogin";
+            public readonly string SignOut = "SignOut";
         }
 
 
@@ -75,6 +81,12 @@ namespace NuGetServer.Controllers {
         public override System.Web.Mvc.ActionResult DoLogin(NuGetServer.Models.LoginModel model, string returnUrl) {
             var callInfo = new T4MVC_ActionResult(Area, Name, ActionNames.DoLogin);
             callInfo.RouteValueDictionary.Add("model", model);
+            callInfo.RouteValueDictionary.Add("returnUrl", returnUrl);
+            return callInfo;
+        }
+
+        public override System.Web.Mvc.ActionResult SignOut(string returnUrl) {
+            var callInfo = new T4MVC_ActionResult(Area, Name, ActionNames.SignOut);
             callInfo.RouteValueDictionary.Add("returnUrl", returnUrl);
             return callInfo;
         }

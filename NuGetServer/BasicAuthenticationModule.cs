@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Security;
 using System.Security.Principal;
 using Castle.MicroKernel.Lifestyle;
+using NuGetServer.Models;
 
 namespace NuGetServer {
 	public class BasicAuthenticationModule : IHttpModule
@@ -50,16 +51,20 @@ namespace NuGetServer {
             if (ticket == null)
                 return false;
 
-            var principal = WithUserRepository(repo => repo.TryGetUser(ticket.Name));
-            if (principal == null)
+            var user = WithUserRepository(repo => repo.TryGetUser(ticket.Name));
+            if (user == null)
                 return false;
 
-            application.Context.User = principal;
+            application.Context.User = ToPrincipal(user);
 
             return true;
         }
 
-		private void OnAuthenticateRequest(object sender, EventArgs e) {
+	    private IPrincipal ToPrincipal(User user) {
+            return user != null ? new GenericPrincipal(new GenericIdentity(user.Username), user.Roles.ToArray()) : null;
+	    }
+
+	    private void OnAuthenticateRequest(object sender, EventArgs e) {
 			var application = (HttpApplication)sender;
             if (DoFormsAuthentication(application))
                 return;
@@ -80,7 +85,7 @@ namespace NuGetServer {
         }
 
 		private IPrincipal Authenticate(string username, string password) {
-            return WithUserRepository(repo => repo.AuthenticateUser(username, password));
+            return ToPrincipal(WithUserRepository(repo => repo.AuthenticateUser(username, password)));
 		}
 
 	    private string Base64Decode(string encodedData) {

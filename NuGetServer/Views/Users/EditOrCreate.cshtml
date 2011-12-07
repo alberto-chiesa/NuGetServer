@@ -1,0 +1,159 @@
+﻿@model EditOrCreateUserModel
+
+@section Header {
+	<h1>@(Model.IsCreate ? "New" : "Edit") User</h1>
+}
+
+<div class="row">
+	<div class="span14">
+		@using (Html.BeginForm(Model.IsCreate ? MVC.Users.Create() : MVC.Users.Edit(), FormMethod.Post, new { id = "editForm" })) {
+			foreach (var e in ViewData.ModelState.SelectMany(x => x.Value.Errors).Distinct()) {
+			<div class="alert-message error">
+				@e.ErrorMessage
+			</div>
+			}
+
+			<div class="clearfix">
+				<label>Username</label>
+				<div class="input">
+					@if (Model.IsCreate) {
+						@Html.TextBoxFor(m => m.Username, new { @class = "span4", id = "usernameTextbox" })
+					} else {
+						<span class="uneditable-input span4">@Model.Username</span>@Html.HiddenFor(m => m.Username)
+					}
+				</div>
+			</div>
+			<div class="clearfix">
+				<label>Roles</label>
+				<div class="input">
+					<ul class="inputs-list">
+						@foreach (var role in AvailableRoles.AllRoles) {
+							<li>
+								<label>
+									<input type="checkbox" name="@Html.GetFieldName(m => m.Roles)" value="@role" @(Model.Roles != null && Model.Roles.Contains(role) ? "checked=\"checked\"" : "")/>
+									<span>@role</span>
+								</label>
+							</li>
+						}
+					</ul>
+				</div>
+			</div>
+
+			<div class="clearfix">
+				<label for="@Html.GetFieldId(m => m.Password)">@(Model.IsCreate ? "Password" : "Change Password")</label>
+				<div class="input">
+					@if (Model.IsCreate) {
+						@Html.PasswordFor(m => m.Password, new { @class = "span3", id = "passwordTextbox", value = Model.Password })
+					}
+					else {
+						<span class="input-prepend">
+							<label class="add-on" id="changePasswordAddOn"><input type="checkbox" name="@Html.GetFieldName(m => m.ChangePassword)" id="doChangePasswordCheckbox" @(Model.ChangePassword ? "checked=\"checked\"" : "") value="true"/></label>
+							@Html.PasswordFor(m => m.Password, new { @class = "span3", id = "passwordTextbox", disabled = "disabled", value = Model.Password })
+						</span>
+					}
+				</div>
+			</div>
+
+			<div class="clearfix">
+				<label for="@Html.GetFieldId(m => m.PasswordConfirm)">Confirm Password</label>
+				<div class="input">
+					@if (Model.IsCreate) {
+						@Html.PasswordFor(m => m.PasswordConfirm, new { @class = "span3", id = "confirmPasswordTextbox", value = Model.PasswordConfirm })
+					}
+					else {
+						<span class="input-prepend">
+							<span class="add-on" id="confirmPasswordAddOn">&nbsp;</span>
+							@Html.PasswordFor(m => m.PasswordConfirm, new { @class = "span3", id = "confirmPasswordTextbox", disabled = "disabled", value = Model.PasswordConfirm })
+						</span>
+					}
+				</div>
+			</div>
+
+			<div class="actions">
+				<input type="submit" class="btn primary" value="@(Model.IsCreate ? "Create User" : "Save Changes")" id="saveButton" data-loadingText="Saving..."/>
+				<a href="@Url.Action(MVC.Users.Index())" class="btn">Cancel</a>
+				@if (!Model.IsCreate) {
+					<span class="span4" style="display: inline-block">&nbsp;</span>
+					<a href="#" class="btn danger" id="deleteButton">Delete User</a>
+				}
+			</div>
+
+			@Html.HiddenFor(m => m.IsCreate)
+		}
+	</div>
+
+	@if (!Model.IsCreate) {
+		using (Html.BeginForm(MVC.Users.Delete(), FormMethod.Post, new { id = "deleteForm", style = "display: none" })) {
+			@Html.HiddenFor(m => m.Username)
+		}
+	}
+</div>
+
+<script type="text/javascript">
+	@if (!Model.IsCreate) {
+		<text>
+		function setChangePasswordState() {
+			var checked = $('#doChangePasswordCheckbox')[0].checked;
+			$('#changePasswordAddOn, #confirmPasswordAddOn').toggleClass('active', checked);
+			$('#passwordTextbox, #confirmPasswordTextbox').attr('disabled', !checked);
+		}
+		$('#doChangePasswordCheckbox').click(setChangePasswordState);
+		@if (Model.ChangePassword) {
+			<text>setChangePasswordState();</text>
+		}
+		</text>
+	}
+
+	function addError(text, input) {
+		input.closest('.clearfix').addClass('error');
+		$('<span class="help-inline errorHelp"></span>').text(text).appendTo(input.closest('.input'));
+	}
+
+	$('#editForm').submit(function() {
+		$('.error').removeClass('error');
+		$('.errorHelp').remove();
+
+		@if (Model.IsCreate) {
+			<text>
+				var username = $('#usernameTextbox').val();
+				if (username === '') {
+					addError('You must enter a username for the user.', $('#usernameTextbox'));
+					return false;
+				}
+				if (username.match(/[^-a-zA-Z0-9_@@.]/)) {
+					addError("The username can only contains letters, numbers, and '.', '_', '@@' and '-'.", $('#usernameTextbox'));
+					return false;
+				}
+			</text>
+		}
+
+		if (@Html.Raw(Model.IsCreate ? "true" : "$('#doChangePasswordCheckbox')[0].checked")) {
+			var newPassword = $('#passwordTextbox').val(), confirmedPassword = $('#confirmPasswordTextbox').val();
+			if (newPassword === '') {
+				addError('You must specify the password.', $('#passwordTextbox'));
+				return false;
+			}
+			if (newPassword.match(/^ /) || newPassword.match(/ $/)) {
+				addError('The password cannot start or end with a space.', $('#confirmPasswordTextbox'));
+				return false;
+			}
+			if (confirmedPassword === '') {
+				addError('You must confirm the password.', $('#confirmPasswordTextbox'));
+				return false;
+			}
+			if (newPassword !== confirmedPassword) {
+				addError('The passwords do not match.', $('#confirmPasswordTextbox'));
+				return false;
+			}
+		}
+
+		$('.btn').attr('disabled', true);
+	});
+
+	$('#deleteButton').click(function() {
+		if (confirm('Do you really want to delete the user \'@Model.Username\'?')) {
+			$('#deleteForm').submit();
+		}
+	});
+</script>
+

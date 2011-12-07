@@ -8,6 +8,7 @@
 	<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/Site.css")"/>
     <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.4.4.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/bootstrap-modal.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/bootstrap-buttons.js")"></script>
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -25,7 +26,7 @@
 				</ul>
 				@if (User.Identity.IsAuthenticated) {
 					<form action="" class="pull-right">
-						<button class="btn" type="submit">Sign out</button>
+						<a href="@Url.Action(MVC.Login.SignOut(ViewContext.HttpContext.Request.Path))" class="btn" type="submit">Sign out</a>
 					</form>
 				} else {
 					using (Html.BeginForm(MVC.Login.DoLogin(), FormMethod.Post, new { @class = "pull-right" })) {

@@ -28,7 +28,7 @@
 		@if (User.IsInRole(AvailableRoles.Administrator)) {
 			<text>Administrative tasks:</text>
 			<ul>
-				<li>Administer users</li>
+				<li><a href="@Url.Action(MVC.Users.Index())">Administer users</a></li>
 				<li>Change own password</li>
 			</ul>
 		}
