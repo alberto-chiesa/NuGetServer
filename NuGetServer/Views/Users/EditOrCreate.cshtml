@@ -134,7 +134,7 @@
 				return false;
 			}
 			if (newPassword.match(/^ /) || newPassword.match(/ $/)) {
-				addError('The password cannot start or end with a space.', $('#confirmPasswordTextbox'));
+				addError('The password cannot start or end with a space.', $('#passwordTextbox'));
 				return false;
 			}
 			if (confirmedPassword === '') {

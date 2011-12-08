@@ -23,6 +23,7 @@ using T4MVC;
 
 [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
 public static class MVC {
+    public static NuGetServer.Controllers.AccountController Account = new NuGetServer.Controllers.T4MVC_AccountController();
     public static NuGetServer.Controllers.HomeController Home = new NuGetServer.Controllers.T4MVC_HomeController();
     public static NuGetServer.Controllers.LoginController Login = new NuGetServer.Controllers.T4MVC_LoginController();
     public static NuGetServer.Controllers.UsersController Users = new NuGetServer.Controllers.T4MVC_UsersController();

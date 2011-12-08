@@ -29,11 +29,11 @@
 			<text>Administrative tasks:</text>
 			<ul>
 				<li><a href="@Url.Action(MVC.Users.Index())">Administer users</a></li>
-				<li>Change own password</li>
+				<li><a href="@Url.Action(MVC.Account.Settings())">Account settings</a></li>
 			</ul>
 		}
 		else if (User.Identity.IsAuthenticated) {
-			<text>Change your password</text>
+			<a href="@Url.Action(MVC.Account.Settings())">Account settings</a>
 		}
 		else {
 			<a href="@Url.Action(MVC.Login.Index())">Log in</a><text> to change your password, or to administer users.</text>
