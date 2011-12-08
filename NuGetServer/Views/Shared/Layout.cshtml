@@ -19,13 +19,17 @@
 			<div class="container">
 				<a class="brand" href="/">NuGet Repository</a>
 				<ul class="nav">
-					<li class="active"><a href="/">Home</a></li>
+					<li class="@(ViewBag.ActiveTab == "Home" ? "active" : "")"><a href="/">Home</a></li>
 					@if (User.IsInRole(AvailableRoles.Administrator)) {
-						<li><a href="@Url.Action(MVC.Users.Index())">Users</a></li>
+						<li class="@(ViewBag.ActiveTab == "Users" ? "active" : "")"><a href="@Url.Action(MVC.Users.Index())">Users</a></li>
 					}
+					@if (User.Identity.IsAuthenticated) {
+						<li class="@(ViewBag.ActiveTab == "AccountSettings" ? "active" : "")"><a href="@Url.Action(MVC.Account.Settings())">Settings</a></li>
+					}
+					<li><a href="@Helpers.GetRepositoryUrl(Request.Url, Request.ApplicationPath)/Packages">Feed</a></li>
 				</ul>
 				@if (User.Identity.IsAuthenticated) {
-					<form action="" class="pull-right">
+					<form action="#" class="pull-right">
 						<a href="@Url.Action(MVC.Login.SignOut(ViewContext.HttpContext.Request.Path))" class="btn" type="submit">Sign out</a>
 					</form>
 				} else {

@@ -47,7 +47,6 @@ namespace NuGetServer.Controllers
             }
         }
 
-        #warning TODO: Track active item, menu
         private ActionResult RedirectAfterLoginOrLogout(string returnUrl) {
             if (!string.IsNullOrEmpty(returnUrl))
                 return Redirect(returnUrl);

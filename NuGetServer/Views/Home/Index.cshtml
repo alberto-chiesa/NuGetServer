@@ -1,5 +1,5 @@
 ﻿@{
-	ViewBag.Title = "NuGet Private Repository";
+	ViewBag.ActiveTab = "Home";
 }
 
 @section Header {
@@ -11,7 +11,7 @@
 <div class="row">
 	<div class="span10">
 		<h2>Available packages</h2>
-	    Click <a href="@Url.Content("~/nuget/Packages")">here</a> to view the packages in the feed@(!User.Identity.IsAuthenticated ? " (requires authentication)" : "").
+	    Click <a href="@Helpers.GetRepositoryUrl(Request.Url, Request.ApplicationPath)/Packages">here</a> to view the packages in the feed@(!User.Identity.IsAuthenticated ? " (requires authentication)" : "").
 	</div>
 </div>
 <div class="row">
