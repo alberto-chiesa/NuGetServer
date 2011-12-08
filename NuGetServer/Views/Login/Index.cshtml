@@ -11,7 +11,7 @@
 				Invalid username or password.
 			</div>
 		}
-		@using (Html.BeginForm(MVC.Login.DoLogin(), FormMethod.Post)) {
+		@using (Html.BeginForm(MVC.Login.DoLogin().AddRouteValues(new { returnUrl = Model.ReturnUrl }), FormMethod.Post)) {
 			<div class="clearfix">
 				<label for="@Html.GetFieldId(m => m.Username)">Username</label>
 				<div class="input">@Html.TextBoxFor(m => m.Username, new { @class = "span4" })</div>

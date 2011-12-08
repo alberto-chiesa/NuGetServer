@@ -20,9 +20,11 @@ namespace NuGetServer.Controllers
         }
 
         [HttpGet]
-        public virtual ActionResult Index()
+        public virtual ActionResult Index(string returnUrl)
         {
-            return View(TempData[LoginModelKey] as LoginModel ?? new LoginModel());
+            var model = TempData[LoginModelKey] as LoginModel ?? new LoginModel();
+            model.ReturnUrl = returnUrl;
+            return View(model);
         }
 
         [HttpPost]
@@ -45,7 +47,6 @@ namespace NuGetServer.Controllers
             }
         }
 
-        #warning TODO: Keep return url when login failed.
         #warning TODO: Track active item, menu
         private ActionResult RedirectAfterLoginOrLogout(string returnUrl) {
             if (!string.IsNullOrEmpty(returnUrl))

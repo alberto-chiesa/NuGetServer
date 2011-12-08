@@ -33,6 +33,11 @@ namespace NuGetServer.Controllers {
 
         [NonAction]
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public System.Web.Mvc.ActionResult Index() {
+            return new T4MVC_ActionResult(Area, Name, ActionNames.Index);
+        }
+        [NonAction]
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public System.Web.Mvc.ActionResult DoLogin() {
             return new T4MVC_ActionResult(Area, Name, ActionNames.DoLogin);
         }
@@ -73,8 +78,9 @@ namespace NuGetServer.Controllers {
     public class T4MVC_LoginController: NuGetServer.Controllers.LoginController {
         public T4MVC_LoginController() : base(Dummy.Instance) { }
 
-        public override System.Web.Mvc.ActionResult Index() {
+        public override System.Web.Mvc.ActionResult Index(string returnUrl) {
             var callInfo = new T4MVC_ActionResult(Area, Name, ActionNames.Index);
+            callInfo.RouteValueDictionary.Add("returnUrl", returnUrl);
             return callInfo;
         }
 
