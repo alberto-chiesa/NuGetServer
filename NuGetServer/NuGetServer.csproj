@@ -249,16 +249,6 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Packages\elmah.1.2.0.1.nupkg" />
-    <Content Include="Packages\elmah.corelibrary.1.2.nupkg" />
-    <Content Include="Packages\Microsoft.Web.Infrastructure.1.0.0.0.nupkg" />
-    <Content Include="Packages\Ninject.2.2.1.4.nupkg" />
-    <Content Include="Packages\NuGet.Core.1.5.20902.9026.nupkg" />
-    <Content Include="Packages\NuGet.Server.1.5.20902.9026.nupkg" />
-    <Content Include="Packages\RouteMagic.1.0.nupkg" />
-    <Content Include="Packages\WebActivator.1.4.4.nupkg" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Users\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
